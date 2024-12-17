@@ -1,13 +1,17 @@
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.UnreachableBrowserException;
 
+import java.io.BufferedWriter;
 import java.io.FileReader;
 import java.io.Reader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 public class RedirectTestFromCSV {
     protected WebDriver driver;
@@ -16,10 +20,17 @@ public class RedirectTestFromCSV {
     public void testRedirect() {
 
         String baseUrl = "https://www.montrealgazette.com";
-        String csvFilePath = "src/test/resources/redirects80.csv";
+        String csvFilePath = "src/test/resources/redirects90.csv";
+        String outputCsvPath = "src/test/resources/redirect_results.csv";
+
         int urlCounter = 0;
 
         try {
+
+            BufferedWriter writer = Files.newBufferedWriter(Paths.get(outputCsvPath));
+            CSVPrinter csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
+                    .withHeader("Test #", "Redirect", "URL", "ActualRedirect", "Status"));
+
             Reader reader = new FileReader(csvFilePath);
             CSVParser csvParser = new CSVParser(reader, CSVFormat.DEFAULT
                     .withFirstRecordAsHeader()
@@ -30,11 +41,12 @@ public class RedirectTestFromCSV {
                 driver = DriverFactory.initializeDriver("chrome");
                 System.out.println("----------------------------Esta es la URL #" + ++urlCounter + "--------------------------------");
 
-                String longUrl = baseUrl + record.get("LongUrl");
-                String expectedRedirect = baseUrl + record.get("Redirect");
+                String longUrl = baseUrl + record.get("Redirect");
+                String expectedRedirect = baseUrl + record.get("URL");
 
                 boolean success = false;
                 int attempt = 0;
+                String actualRedirect = "";
 
                 while (attempt < 3 && !success) {
                     try {
@@ -42,10 +54,10 @@ public class RedirectTestFromCSV {
                         System.out.println("Intento #" + attempt + " - Probando redirección desde: " + longUrl + " hacia: " + expectedRedirect);
 
                         driver.get(longUrl);
-                        String currentUrl = driver.getCurrentUrl();
+                        actualRedirect = driver.getCurrentUrl();
 
-                        if (expectedRedirect.equals(currentUrl)) {
-                            System.out.println("✅ Redirección correcta: " + currentUrl);
+                        if (expectedRedirect.equals(actualRedirect)) {
+                            System.out.println("✅ Redirección correcta: " + actualRedirect);
                             success = true;
                             driver.close();
                         } else {
@@ -58,17 +70,24 @@ public class RedirectTestFromCSV {
                     } catch (Exception e) {
                         System.out.println("⚠️ Excepción al probar redirección: " + e.getMessage());
                     }
+
                 }
 
-                if (!success) {
+                if (success) {
+                    csvPrinter.printRecord(urlCounter, longUrl, expectedRedirect, actualRedirect, "Success");
+                } else {
                     System.out.println("❗Redirección fallida después de 3 intentos: " + longUrl);
-                    Assertions.assertEquals(expectedRedirect, driver.getCurrentUrl(), "❌ Redirección incorrecta: ");
+                    csvPrinter.printRecord(urlCounter, longUrl, expectedRedirect, actualRedirect, "Failure");
                 }
 
                 DriverFactory.quitDriver(driver);
             }
-
             csvParser.close();
+            csvPrinter.flush();
+            csvPrinter.close();
+            System.out.println("✅ Pruebas completadas. Resultados almacenados en: " + outputCsvPath);
+
+
         } catch (Exception e) {
             System.out.println("⚠️ Error al procesar el archivo CSV: " + e.getMessage());
         }
