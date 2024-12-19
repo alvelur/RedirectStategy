@@ -20,7 +20,7 @@ public class RedirectTestFromCSV {
     public void testRedirect() {
 
         String baseUrl = "https://www.montrealgazette.com";
-        String csvFilePath = "src/test/resources/redirects90.csv";
+        String csvFilePath = "src/test/resources/input/redirects80.csv";
         String outputCsvPath = "src/test/resources/redirect_results.csv";
 
         int urlCounter = 0;
