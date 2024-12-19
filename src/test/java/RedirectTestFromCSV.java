@@ -20,8 +20,8 @@ public class RedirectTestFromCSV {
     public void testRedirect() {
 
         String baseUrl = "https://www.montrealgazette.com";
-        String csvFilePath = "src/test/resources/input/redirects80.csv";
-        String outputCsvPath = "src/test/resources/redirect_results.csv";
+        String csvFilePath = "src/test/resources/input/redirects.csv";
+        String outputCsvPath = "src/test/resources/output/redirect_results1.csv";
 
         int urlCounter = 0;
 
@@ -41,8 +41,8 @@ public class RedirectTestFromCSV {
                 driver = DriverFactory.initializeDriver("chrome");
                 System.out.println("----------------------------Esta es la URL #" + ++urlCounter + "--------------------------------");
 
-                String longUrl = baseUrl + record.get("Redirect");
-                String expectedRedirect = baseUrl + record.get("URL");
+                String longUrl = baseUrl + record.get("original_link");
+                String expectedRedirect = baseUrl + record.get("expected_link");
 
                 boolean success = false;
                 int attempt = 0;
@@ -81,9 +81,9 @@ public class RedirectTestFromCSV {
                 }
 
                 DriverFactory.quitDriver(driver);
+                csvPrinter.flush();
             }
             csvParser.close();
-            csvPrinter.flush();
             csvPrinter.close();
             System.out.println("✅ Pruebas completadas. Resultados almacenados en: " + outputCsvPath);
 

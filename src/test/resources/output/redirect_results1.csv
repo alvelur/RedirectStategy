@@ -1,0 +1,5 @@
+Test #,Redirect,URL,ActualRedirect,Status
+1,https://www.montrealgazette.com/opinion/sending-an-opinion-column-or-letter-to-the-montreal-gazette,https://www.montrealgazette.com/opinion/article177071.html,https://www.montrealgazette.com/opinion/sending-an-opinion-column-or-letter-to-the-montreal-gazette,Failure
+2,https://www.montrealgazette.com/news/local-news/the-fate-of-the-fulford-what-next-for-the-downtown-landmark,https://www.montrealgazette.com/news/article177299.html,https://www.montrealgazette.com/news/article177299.html,Success
+3,https://www.montrealgazette.com/entertainment/local-arts/five-years-after-leonard-cohens-death-a-graphic-novel-honours-his-legacy-and-his-city,https://www.montrealgazette.com/entertainment-life/article445567.html,https://www.montrealgazette.com/entertainment-life/article445567.html,Success
+4,https://www.montrealgazette.com/business/local-business/patrons-and-staff-toast-relaxed-rules-for-bars-and-restaurants,https://www.montrealgazette.com/business/article445568.html,https://www.montrealgazette.com/business/article445568.html,Success
